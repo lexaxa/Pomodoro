@@ -1,4 +1,4 @@
-package com.pomodoro.alexis.pomodoro;
+package com.alexis.pomodoro;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
