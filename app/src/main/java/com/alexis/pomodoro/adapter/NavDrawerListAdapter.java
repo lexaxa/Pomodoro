@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alexis.pomodoro.model.NavDrawerItem;
+import com.alexis.pomodoro.R;
 
 import java.util.ArrayList;
 
