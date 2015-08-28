@@ -1,9 +1,12 @@
-apply plugin: 'com.android.application'
+apply plugin: 'android'
 
-android {
+android{
     compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    buildToolsVersion '22.0.1'
 
+    lintOptions {
+        abortOnError false
+    }
     defaultConfig {
         applicationId "com.alexis.pomodoro"
         minSdkVersion 16

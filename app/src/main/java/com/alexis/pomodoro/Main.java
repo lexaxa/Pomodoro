@@ -1,12 +1,14 @@
 package com.alexis.pomodoro;
 
-import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.app.Fragment;
-import android.os.Build;
-import android.support.v4.app.ActivityCompat;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -18,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-//import android.widget.Toolbar;
 
 import com.alexis.pomodoro.adapter.NavDrawerListAdapter;
 import com.alexis.pomodoro.model.NavDrawerItem;
@@ -112,6 +113,8 @@ public class Main extends AppCompatActivity {
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+
 
         if (savedInstanceState == null) {
             // on first time display view for first nav item
@@ -256,5 +259,18 @@ public class Main extends AppCompatActivity {
         }
     }
 
+    private class Rectangle extends View{
+        Paint paint = new Paint();
+
+        public Rectangle(Context context) {
+            super(context);
+        }
+        @Override
+        public void onDraw(Canvas canvas) {
+            paint.setColor(Color.GREEN);
+            Rect rect = new Rect(20, 56, 200, 112);
+            canvas.drawRect(rect, paint );
+        }
+    }
 
 }
