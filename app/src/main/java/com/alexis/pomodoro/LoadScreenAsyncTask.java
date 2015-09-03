@@ -32,7 +32,7 @@ public class LoadScreenAsyncTask extends AsyncTask<Void, Void, Void>{
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        Intent intent = new Intent(loadScreen, Main.class);
+        Intent intent = new Intent(loadScreen, test.class);
         loadScreen.startActivity(intent);
         loadScreen.finish();
     }
