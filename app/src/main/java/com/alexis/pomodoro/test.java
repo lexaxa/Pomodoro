@@ -1,6 +1,7 @@
 package com.alexis.pomodoro;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -72,20 +73,29 @@ public class test extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.btnStart:
                 canvasView.touchEvent();
-                canvasView.startTimer();
-//                Thread t = new Thread(new Runnable(){
-  //                  public void run(){
-/*                        for (int i = 1; i <= 10; i++) {
-                            // долгий процесс
-                            downloadFile();
-                            // обновляем TextView
-                            handler.sendEmptyMessage(i);
-                            // пишем лог
-                            Log.d(LOG_TAG, "Закачано файлов: " + i);
+               // canvasView.startTimer();
+                new CountDownTimer(20000, 1000){
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        canvasView.touchEvent();
+                        tvInfo.setText("second remaining: " + millisUntilFinished / 1000);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        tvInfo.setText("finished");
+                    }
+                }.start();
+/*                Thread t = new Thread(new Runnable(){
+                    public void run(){
+                        for (int i = 1; i <= 10; i++) {
+                            downloadFile(); // долгий процесс
+                            handler.sendEmptyMessage(i); // обновляем TextView
+                            Log.d(LOG_TAG, "Закачано файлов: " + i); // пишем лог
                         }
-*/      //              }
-    //            });
-      //          t.start();
+                   }
+                });
+                t.start();*/
                 break;
             case R.id.btnPause:
                 Log.d(LOG_TAG, "btnPause");

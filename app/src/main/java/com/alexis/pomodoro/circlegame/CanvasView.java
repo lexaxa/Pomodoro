@@ -109,10 +109,7 @@ public class CanvasView extends View{
         canvas.save();
         paint.setColor(0xFFA2BC13);
         canvas.drawLine(x, y, (float)(x+(mainCircle.INIT_RADIUS+10)*Math.cos(Math.toRadians((sec / 60.0f * 360.0f)-90f))), (float)(y+(mainCircle.INIT_RADIUS+15)*Math.sin(Math.toRadians((sec / 60.0f * 360.0f)-90f))), paint);
-/*        for (int i = 0; i < 10; i++) {
-            sec++;
-        }
-*/    }
+    }
 
     public void touchEvent() {
         draw(this.canvas);
@@ -123,8 +120,7 @@ public class CanvasView extends View{
         timer = new Timer();
         Log.d(LOG_TAG, "startTimer");
         initTimerTask();
-        timer.schedule(timerTask, 1000, 10000);
-
+        timer.schedule(timerTask, 1000, 1000);
     }
 
     public void stopTimerTask(View v){
@@ -144,11 +140,6 @@ public class CanvasView extends View{
                     public void run() {
                         int i=0;
                         while (timer != null && i++<1000){
-                            /*try {
-                                TimeUnit.SECONDS.sleep(1);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }*/
                             touchEvent();
                         }
                     }
@@ -156,7 +147,4 @@ public class CanvasView extends View{
             }
         };
     }
-
-
 }
-
