@@ -1,34 +1,41 @@
 package com.alexis.pomodoro;
 
-import android.app.FragmentManager;
-import android.content.Context;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.app.Fragment;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.os.CountDownTimer;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.*;
 
 import com.alexis.pomodoro.adapter.NavDrawerListAdapter;
+import com.alexis.pomodoro.circlegame.CanvasView;
 import com.alexis.pomodoro.model.NavDrawerItem;
-import com.alexis.pomodoro.R;
 
 import java.util.ArrayList;
 
 
-public class Main extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
+
+    public static final int MAIN_LAYOUT = R.layout.activity_main;
+    private DrawerLayout drawerLayout;
+    private TextView tvInfo;
+    private Button btnStart;
+    private CanvasView canvasView;
+    private static final String LOG_TAG = "PomLog";
 
     private Toolbar toolbar;
     private DrawerLayout mDrawerLayout;
@@ -50,10 +57,17 @@ public class Main extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+//        setTheme(R.style.AppDefault);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-       // initToolbar();
+        setContentView(MAIN_LAYOUT);
+
+        tvInfo = (TextView) findViewById(R.id.tvInfo);
+        btnStart = (Button) findViewById(R.id.btnStart);
+
+        //canvasView = (CanvasView) findViewById(R.id.canvasview);
+
+        initToolbar();
 
         mTitle = mDrawerTitle = getTitle();
 
@@ -91,29 +105,32 @@ public class Main extends AppCompatActivity {
                 navDrawerItems);
         mDrawerList.setAdapter(adapter);
 
+
         // enabling action bar app icon and behaving it as toggle button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.ic_drawer, //nav menu toggle icon
+        mDrawerToggle = new ActionBarDrawerToggle(this,
+                mDrawerLayout,
+                toolbar, //R.drawable.ic_drawer, //nav menu toggle icon
                 R.string.app_name, // nav drawer open - description for accessibility
                 R.string.app_name // nav drawer close - description for accessibility
         ){
             public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
                 getSupportActionBar().setTitle(mTitle);
                 // calling onPrepareOptionsMenu() to show action bar icons
                 invalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
                 getSupportActionBar().setTitle(mDrawerTitle);
                 // calling onPrepareOptionsMenu() to hide action bar icons
                 invalidateOptionsMenu();
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
 
 
         if (savedInstanceState == null) {
@@ -124,7 +141,7 @@ public class Main extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_appbar, menu);
         return true;
     }
 
@@ -178,28 +195,6 @@ public class Main extends AppCompatActivity {
         // Pass any configuration change to the drawer toggls
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
-/*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        initToolbar();
-    }
-*/
-
-    private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.app_name);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return false;
-            }
-        });
-
-        toolbar.inflateMenu((R.menu.menu_main));
-    }
 
     /**
      * Diplaying fragment view for selected nav drawer list item
@@ -212,19 +207,19 @@ public class Main extends AppCompatActivity {
                 fragment = new HomeFragment();
                 break;
             case 1:
-                fragment = new FindPeopleFragment();
+                fragment = new StatisticsFragment();
                 break;
             case 2:
-                fragment = new PhotosFragment();
+                fragment = new AboutFragment();
                 break;
             case 3:
-                fragment = new CommunityFragment();
+                fragment = new MacrosFragment();
                 break;
             case 4:
-                fragment = new PagesFragment();
+                fragment = new HelpFragment();
                 break;
             case 5:
-                fragment = new WhatsHotFragment();
+                fragment = new SettingsFragment();
                 break;
 
             default:
@@ -234,7 +229,8 @@ public class Main extends AppCompatActivity {
         if (fragment != null) {
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction()
-                    .replace(R.id.frame_container, fragment).commit();
+                    .replace(R.id.frame_container, fragment)
+                    .commit();
 
             // update selected item and title, then close the drawer
             mDrawerList.setItemChecked(position, true);
@@ -259,18 +255,73 @@ public class Main extends AppCompatActivity {
         }
     }
 
-    private class Rectangle extends View{
-        Paint paint = new Paint();
+    private void initToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.app_name);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Fragment fragment = new HomeFragment();
+                FragmentManager fragmentManager = getFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+                return false;
+            }
+        });
 
-        public Rectangle(Context context) {
-            super(context);
+        toolbar.inflateMenu(R.menu.menu_appbar);
+    }
+
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnStart:
+                //canvasView.touchEvent();
+                //canvasView.startTimer();
+                tvInfo.setText("start");
+                new CountDownTimer(20000, 1000){
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        canvasView.touchEvent();
+                        tvInfo.setText("second remaining: " + millisUntilFinished / 1000);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        tvInfo.setText("finished");
+                    }
+                }.start();
+                break;
+            case R.id.btnPause:
+                Log.d(LOG_TAG, "btnPause");
+                pause();
+                break;
+            case R.id.btnStop:
+                canvasView.stopTimerTask(canvasView);
+            default:
+                Log.d(LOG_TAG, "MainActivity");
+                break;
         }
-        @Override
-        public void onDraw(Canvas canvas) {
-            paint.setColor(Color.GREEN);
-            Rect rect = new Rect(20, 56, 200, 112);
-            canvas.drawRect(rect, paint );
-        }
+    }
+
+    private void pause() {
+
+        // Animate
+        ObjectAnimator a = ObjectAnimator.ofFloat(findViewById(R.id.btnPause), View.SCALE_X, 1f, 0f);
+        a.setInterpolator(new AccelerateInterpolator());
+        a.setDuration(125);
+        a.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //mTimersListPage.setVisibility(View.GONE);
+                btnStart.setScaleX(0);
+                btnStart.setVisibility(View.VISIBLE);
+                ObjectAnimator b = ObjectAnimator.ofFloat(btnStart, View.SCALE_X, 0f, 1f);
+                b.setInterpolator(new DecelerateInterpolator());
+                b.setDuration(225);
+                b.start();
+            }
+        });
+        a.start();
+
     }
 
 }

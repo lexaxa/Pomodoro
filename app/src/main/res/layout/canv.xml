@@ -7,13 +7,16 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_main"
     tools:context=".MainActivity"
     android:background="#ddd">
+    /* tools:showIn="@layout/activity_main" */
 
-    <TextView android:text="Hello World!"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/underconstr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Attention please. This app is under construction."
+        />
 
     <com.alexis.pomodoro.circlegame.CanvasView
         android:id="@+id/canvasview"
@@ -55,12 +58,13 @@
         android:layout_marginRight="45dp"
         android:layout_marginEnd="45dp" />
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="tvinfo"
-        android:id="@+id/tvInfo"
-        android:layout_below="@+id/btnPause"
-        android:layout_centerHorizontal="true" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="tvinfo"
+            android:id="@+id/tvInfo"
+            android:layout_below="@+id/btnPause"
+            android:layout_centerHorizontal="true"
+            android:textColor="@android:color/black"/>
 
 
 </RelativeLayout>

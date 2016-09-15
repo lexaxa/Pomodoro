@@ -1,5 +1,8 @@
 package com.alexis.pomodoro.circlegame;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -10,17 +13,20 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.os.Build;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.internal.app.AppCompatViewInflater;
+//import android.support.v4.view.ViewCompat;
+//import android.support.v7.internal.app.AppCompatViewInflater;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TimeUtils;
 import android.view.MotionEvent;
 import android.view.View;
 
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import com.alexis.pomodoro.R;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -37,7 +43,7 @@ public class CanvasView extends View{
     private Path linePath;
     private Date date = new Date();
     private Canvas canvas;
-    public String s = "test";
+    public String s = "MainActivity";
     private static final String LOG_TAG = "PomLog";
     private Timer timer;
     private TimerTask timerTask;
@@ -78,7 +84,7 @@ public class CanvasView extends View{
         double cx = 200.0;
         double cy = 200.0;
         double r = 75.0;
-        int count = 0;/*
+        int count = 0;
         for(int theta = 0; theta < 10; theta+=INC)
         {
             try {
@@ -91,7 +97,7 @@ public class CanvasView extends View{
 //            points[count++] = new Point(x, y);
             paint.setColor(0xFFA2BC13+theta);
             canvas.drawLine(200, 200, x, y, paint);
-        }*/
+        }
         drawClock(200, 200, canvas);
 
     }
@@ -125,6 +131,7 @@ public class CanvasView extends View{
 
     public void stopTimerTask(View v){
         Log.d(LOG_TAG, "stopTimer");
+
         if(timer != null){
             timer.cancel();
             timer = null;
