@@ -11,6 +11,8 @@
         android:textSize="16dp"
         android:text="Home View"/>
 
+    <include layout = "@layout/canv" />
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

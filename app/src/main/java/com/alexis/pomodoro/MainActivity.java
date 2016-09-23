@@ -1,12 +1,8 @@
 package com.alexis.pomodoro;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,29 +13,21 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.*;
 
 import com.alexis.pomodoro.adapter.NavDrawerListAdapter;
-import com.alexis.pomodoro.circlegame.CanvasView;
 import com.alexis.pomodoro.model.NavDrawerItem;
 
 import java.util.ArrayList;
 
-
 public class MainActivity extends AppCompatActivity {
 
     public static final int MAIN_LAYOUT = R.layout.activity_main;
-    private DrawerLayout drawerLayout;
-    private TextView tvInfo;
-    private Button btnStart;
-    private CanvasView canvasView;
     private static final String LOG_TAG = "PomLog";
 
-    private Toolbar toolbar;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+
     private ActionBarDrawerToggle mDrawerToggle;
 
     // nav drawer title
@@ -48,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     // used to store app title
     private CharSequence mTitle;
 
+    private Toolbar toolbar;
     // slide menu items
     private String[] navMenuTitles;
     private TypedArray navMenuIcons;
@@ -62,14 +51,12 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(MAIN_LAYOUT);
 
-        tvInfo = (TextView) findViewById(R.id.tvInfo);
-        btnStart = (Button) findViewById(R.id.btnStart);
-
-        //canvasView = (CanvasView) findViewById(R.id.canvasview);
-
-        initToolbar();
-
         mTitle = mDrawerTitle = getTitle();
+
+        navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
+
 
         // load slide menu items
         navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
@@ -77,34 +64,12 @@ public class MainActivity extends AppCompatActivity {
         // nav drawer icons from resources
         navMenuIcons = getResources().obtainTypedArray(R.array.nav_drawer_icons);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
-        mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
-        navDrawerItems = new ArrayList<NavDrawerItem>();
-
-        // adding nav drawer items to array
-        // Home
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
-        // Find People
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
-        // Photos
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
-        // Communities, Will add a counter here
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1), true, "22"));
-        // Pages
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
-        // What's hot, We  will add a counter here
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1), true, "50+"));
-
-
-        // Recycle the typed array
-        navMenuIcons.recycle();
-
         // setting the nav drawer list adapter
-        adapter = new NavDrawerListAdapter(getApplicationContext(),
-                navDrawerItems);
-        mDrawerList.setAdapter(adapter);
+//        adapter = new NavDrawerListAdapter(getApplicationContext(), navDrawerItems);
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, R.id.title, navMenuTitles));
 
+        mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
 
         // enabling action bar app icon and behaving it as toggle button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -154,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar actions click
         switch (item.getItemId()) {
             case R.id.action_settings:
+                Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -245,16 +211,14 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Slide menu item click listener
      * */
-    private class SlideMenuClickListener implements
-            ListView.OnItemClickListener {
+    private class SlideMenuClickListener implements ListView.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position,
-                                long id) {
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             // display view for selected nav drawer item
             displayView(position);
         }
     }
-
+/*
     private void initToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.app_name);
@@ -270,58 +234,6 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar.inflateMenu(R.menu.menu_appbar);
     }
-
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btnStart:
-                //canvasView.touchEvent();
-                //canvasView.startTimer();
-                tvInfo.setText("start");
-                new CountDownTimer(20000, 1000){
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        canvasView.touchEvent();
-                        tvInfo.setText("second remaining: " + millisUntilFinished / 1000);
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        tvInfo.setText("finished");
-                    }
-                }.start();
-                break;
-            case R.id.btnPause:
-                Log.d(LOG_TAG, "btnPause");
-                pause();
-                break;
-            case R.id.btnStop:
-                canvasView.stopTimerTask(canvasView);
-            default:
-                Log.d(LOG_TAG, "MainActivity");
-                break;
-        }
-    }
-
-    private void pause() {
-
-        // Animate
-        ObjectAnimator a = ObjectAnimator.ofFloat(findViewById(R.id.btnPause), View.SCALE_X, 1f, 0f);
-        a.setInterpolator(new AccelerateInterpolator());
-        a.setDuration(125);
-        a.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                //mTimersListPage.setVisibility(View.GONE);
-                btnStart.setScaleX(0);
-                btnStart.setVisibility(View.VISIBLE);
-                ObjectAnimator b = ObjectAnimator.ofFloat(btnStart, View.SCALE_X, 0f, 1f);
-                b.setInterpolator(new DecelerateInterpolator());
-                b.setDuration(225);
-                b.start();
-            }
-        });
-        a.start();
-
-    }
+*/
 
 }
